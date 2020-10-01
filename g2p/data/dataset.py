@@ -1,5 +1,5 @@
 import cmudict
-from . import DoubleBets
+from g2p.data import DoubleBets
 
 a2a_dataset = [
     [DoubleBets.alphabet.tseq2iseq(alphaseq),
