@@ -6,8 +6,8 @@ def _pack_data_and_label(batch):
     return pack_sequence(data, enforce_sorted=False), \
            pack_sequence(label, enforce_sorted=False)
 
-def get_loader(data, batch_size, use_cuda):
-    kwargs = {'dataset': data, 'batch_size': batch_size,
+def get_loader(dataset, batch_size, use_cuda):
+    kwargs = {'dataset': dataset, 'batch_size': batch_size,
               'collate_fn': _pack_data_and_label}
     kwargs.update({'num_workers': 1, 'pin_memory': True} if use_cuda else {})
     return DataLoader(**kwargs)
