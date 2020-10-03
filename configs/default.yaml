@@ -1,0 +1,31 @@
+## COMMON ##
+USE_CUDA: True
+MODEL:
+  NAME: Seq2Seq
+  KWARGS:
+    enc_embed_size: 256
+    hidden_size: 256
+    dec_embed_size: 256
+CKPT_PATH: "g2p/checkpoints/model.pth"
+
+## TRAIN ##
+# random seed
+SEED: 0
+
+# dataset
+VALIDATE: False
+SANITY_CHECK:
+  EN: True
+  NUM_DATA: 4
+
+# optimization
+BATCH_SIZE: 128
+EPOCHS: 100
+OPTIMIZER: Adam
+LR: 0.01
+
+## TEST ##
+SEARCH:
+  ALGO: greedy_search
+  KWARGS:
+    limit: 30
