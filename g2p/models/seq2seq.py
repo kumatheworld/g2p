@@ -10,7 +10,7 @@ class Seq2Seq(nn.Module):
 
         def forward(self, src_seq):
             x0 = self.embedding(src_seq)
-            h0 = torch.zeros(1, *x0.shape[1:], device=src_seq.device)
+            h0 = torch.zeros(1, x0.size(1), x0.size(2), device=src_seq.device)
             _, h = self.rnn(x0, h0)
             return h
 
