@@ -24,6 +24,9 @@ class DoubleBets:
                 + [self.ed_idx] if wrap_ed else []
             )
 
+        def unwrap_iseq(self, iseq):
+            return [i for i in iseq if i > self.ed_idx]
+
     alphabet = SingleBet(list("'-." + string.ascii_lowercase))
     arpabet = SingleBet(cmudict.symbols())
 
