@@ -21,7 +21,7 @@ class DoubleBets:
             return torch.LongTensor(
                 ([self.st_idx] if wrap_st else []) \
                 + ([self.t2i[t] for t in tseq]) \
-                + [self.st_idx] if wrap_ed else []
+                + [self.ed_idx] if wrap_ed else []
             )
 
     alphabet = SingleBet(list("'-." + string.ascii_lowercase))
