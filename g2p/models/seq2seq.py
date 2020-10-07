@@ -35,15 +35,11 @@ class Seq2Seq(nn.Module):
 
         def forward(self, h, tgt_seq, search_algo):
             if self.training:
-                x = self.embedding(tgt_seq)
-                rnn_output_seq, _ = self.rnn(x, h)
-                final_output_seq = self.unembedding(rnn_output_seq)
+                logits, _ = self._forward_common(tgt_seq, h)
                 tgt_seq_label = torch.zeros_like(tgt_seq)
                 tgt_seq_label[:-1] = tgt_seq[1:]
-                return self.loss_func(
-                    final_output_seq.view(-1, final_output_seq.size(-1)),
-                    tgt_seq_label.flatten()
-                )
+                return self.loss_func(logits.view(-1, logits.size(-1)),
+                                      tgt_seq_label.flatten())
             else:
                 #TODO: use search algo to make prediction
                 return None
