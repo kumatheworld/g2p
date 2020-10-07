@@ -25,6 +25,14 @@ class Seq2Seq(nn.Module):
             self.unembedding = nn.Linear(hidden_size, tgt_size - 2)
             self.loss_func = nn.CrossEntropyLoss(ignore_index=0)
 
+        def _forward_common(self, seq_in, h0):
+            x0 = self.embedding(seq_in)
+            x, h = self.rnn(x0, h0)
+            seq_out = self.unembedding(x)
+            mask_pad_and_st = torch.full_like(seq_out, float('-inf'))[..., :2]
+            logits = torch.cat((mask_pad_and_st, seq_out), dim=-1)
+            return logits, h
+
         def forward(self, h, tgt_seq, search_algo):
             if self.training:
                 x = self.embedding(tgt_seq)
