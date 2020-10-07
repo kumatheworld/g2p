@@ -22,7 +22,7 @@ class Seq2Seq(nn.Module):
             self.tgt_size = tgt_size
             self.embedding = nn.Embedding(tgt_size, embed_size, padding_idx=0)
             self.rnn = nn.RNN(embed_size, hidden_size)
-            self.unembedding = nn.Linear(hidden_size, tgt_size)
+            self.unembedding = nn.Linear(hidden_size, tgt_size - 2)
             self.loss_func = nn.CrossEntropyLoss(ignore_index=0)
 
         def forward(self, h, tgt_seq, search_algo):
