@@ -5,12 +5,14 @@ class Seq2Seq(nn.Module):
     class Encoder(nn.Module):
         def __init__(self, src_size, embed_size, hidden_size):
             super().__init__()
+            self.hidden_size = hidden_size
             self.embedding = nn.Embedding(src_size, embed_size, padding_idx=0)
             self.rnn = nn.RNN(embed_size, hidden_size)
 
         def forward(self, src_seq):
             x0 = self.embedding(src_seq)
-            h0 = torch.zeros(1, x0.size(1), x0.size(2), device=src_seq.device)
+            h0 = torch.zeros(1, x0.size(1), self.hidden_size,
+                             device=src_seq.device)
             _, h = self.rnn(x0, h0)
             return h
 
