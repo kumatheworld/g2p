@@ -24,6 +24,7 @@ class Seq2Seq(nn.Module):
             self.rnn = getattr(nn, rnn_type)(embed_size, hidden_size)
             self.unembedding = nn.Linear(hidden_size, tgt_size - 2)
             self.loss_func = nn.CrossEntropyLoss(ignore_index=0)
+            self.softmax = nn.Softmax(dim=0)
 
         def _forward_common(self, seq_in, h0):
             x0 = self.embedding(seq_in)
@@ -32,6 +33,12 @@ class Seq2Seq(nn.Module):
             mask_pad_and_st = torch.full_like(seq_out, float('-inf'))[..., :2]
             logits = torch.cat((mask_pad_and_st, seq_out), dim=-1)
             return logits, h
+
+        def _rec_prob_gen(self, idx):
+            seq_in = torch.tensor([[idx]], dtype=torch.long,
+                                  device=self.hidden.device)
+            logits, self.hidden = self._forward_common(seq_in, self.hidden)
+            return self.softmax(logits.squeeze(0))
 
         def forward(self, h, tgt_seq, search_algo):
             if self.training:
