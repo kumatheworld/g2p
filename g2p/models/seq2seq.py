@@ -48,8 +48,11 @@ class Seq2Seq(nn.Module):
                 return self.loss_func(logits.view(-1, logits.size(-1)),
                                       tgt_seq_label.flatten())
             else:
-                #TODO: use search algo to make prediction
-                return None
+                predictions = []
+                for i in range(h.size(1)):
+                    self.hidden = h[:, i:i+1]
+                    predictions.append(search_algo(self._rec_prob_gen))
+                return predictions
 
     def __init__(self, rnn_type, src_size, enc_embed_size,
                  hidden_size, dec_embed_size, tgt_size):
