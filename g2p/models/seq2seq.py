@@ -3,11 +3,11 @@ import torch.nn as nn
 
 class Seq2Seq(nn.Module):
     class Encoder(nn.Module):
-        def __init__(self, src_size, embed_size, hidden_size):
+        def __init__(self, rnn_type, src_size, embed_size, hidden_size):
             super().__init__()
             self.hidden_size = hidden_size
             self.embedding = nn.Embedding(src_size, embed_size, padding_idx=0)
-            self.rnn = nn.RNN(embed_size, hidden_size)
+            self.rnn = getattr(nn, rnn_type)(embed_size, hidden_size)
 
         def forward(self, src_seq):
             x0 = self.embedding(src_seq)
@@ -17,11 +17,11 @@ class Seq2Seq(nn.Module):
             return h
 
     class Decoder(nn.Module):
-        def __init__(self, embed_size, hidden_size, tgt_size):
+        def __init__(self, rnn_type, embed_size, hidden_size, tgt_size):
             super().__init__()
             self.tgt_size = tgt_size
             self.embedding = nn.Embedding(tgt_size, embed_size, padding_idx=0)
-            self.rnn = nn.RNN(embed_size, hidden_size)
+            self.rnn = getattr(nn, rnn_type)(embed_size, hidden_size)
             self.unembedding = nn.Linear(hidden_size, tgt_size - 2)
             self.loss_func = nn.CrossEntropyLoss(ignore_index=0)
 
@@ -44,11 +44,13 @@ class Seq2Seq(nn.Module):
                 #TODO: use search algo to make prediction
                 return None
 
-    def __init__(self, src_size, enc_embed_size,
+    def __init__(self, rnn_type, src_size, enc_embed_size,
                  hidden_size, dec_embed_size, tgt_size):
         super().__init__()
-        self.encoder = self.Encoder(src_size, enc_embed_size, hidden_size)
-        self.decoder = self.Decoder(dec_embed_size, hidden_size, tgt_size)
+        self.encoder = self.Encoder(rnn_type, src_size,
+                                    enc_embed_size, hidden_size)
+        self.decoder = self.Decoder(rnn_type, dec_embed_size,
+                                    hidden_size, tgt_size)
 
     def forward(self, src_seq, tgt_seq=None, search_algo=None):
         h = self.encoder(src_seq)

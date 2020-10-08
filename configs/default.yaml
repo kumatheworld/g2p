@@ -3,6 +3,7 @@ USE_CUDA: True
 MODEL:
   NAME: Seq2Seq
   KWARGS:
+    rnn_type: RNN
     enc_embed_size: 256
     hidden_size: 256
     dec_embed_size: 256
