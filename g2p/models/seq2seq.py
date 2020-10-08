@@ -24,29 +24,36 @@ class Seq2Seq(nn.Module):
             self.rnn = getattr(nn, rnn_type)(embed_size, hidden_size)
             self.unembedding = nn.Linear(hidden_size, tgt_size - 2)
             self.loss_func = nn.CrossEntropyLoss(ignore_index=0)
-            self.softmax = nn.Softmax(dim=0)
+            self.softmax = nn.Softmax(dim=-1)
 
-        def _forward_common(self, seq_in, h0):
+        def _compute_logits(self, seq_in, h0):
             x0 = self.embedding(seq_in)
             x, h = self.rnn(x0, h0)
-            seq_out = self.unembedding(x)
-            mask_pad_and_st = torch.full_like(seq_out, float('-inf'))[..., :2]
-            logits = torch.cat((mask_pad_and_st, seq_out), dim=-1)
+            logits = self.unembedding(x)
             return logits, h
+
+        @staticmethod
+        def _prepend_2zeros(out):
+            mask_pad_and_st = torch.zeros_like(out)[..., :2]
+            return torch.cat((mask_pad_and_st, out), dim=-1)
 
         def _rec_prob_gen(self, idx):
             seq_in = torch.tensor([[idx]], dtype=torch.long,
                                   device=self.hidden.device)
-            logits, self.hidden = self._forward_common(seq_in, self.hidden)
-            return self.softmax(logits.squeeze(0))
+            logits, self.hidden = self._compute_logits(seq_in, self.hidden)
+            probabilities = self.softmax(logits)
+            return self._prepend_2zeros(probabilities).squeeze(0)
 
         def forward(self, h, tgt_seq, search_algo):
             if self.training:
-                logits, _ = self._forward_common(tgt_seq, h)
+                logits, _ = self._compute_logits(tgt_seq, h)
+                logits_full = self._prepend_2zeros(logits)
                 tgt_seq_label = torch.zeros_like(tgt_seq)
                 tgt_seq_label[:-1] = tgt_seq[1:]
-                return self.loss_func(logits.view(-1, logits.size(-1)),
-                                      tgt_seq_label.flatten())
+                return self.loss_func(
+                    logits_full.view(-1, logits_full.size(-1)),
+                    tgt_seq_label.flatten()
+                )
             else:
                 predictions = []
                 for i in range(h.size(1)):
