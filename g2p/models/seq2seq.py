@@ -34,8 +34,9 @@ class Seq2Seq(nn.Module):
 
         @staticmethod
         def _prepend_2zeros(out):
-            mask_pad_and_st = torch.zeros_like(out)[..., :2]
-            return torch.cat((mask_pad_and_st, out), dim=-1)
+            zeros = torch.zeros(*out.size()[:-1], 2,
+                                dtype=out.dtype, device=out.device)
+            return torch.cat((zeros, out), dim=-1)
 
         def _rec_prob_gen(self, idx):
             seq_in = torch.tensor([[idx]], dtype=torch.long,
