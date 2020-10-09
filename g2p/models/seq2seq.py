@@ -47,13 +47,11 @@ class Seq2Seq(nn.Module):
 
         def forward(self, h, tgt_seq, search_algo):
             if self.training:
-                logits, _ = self._compute_logits(tgt_seq, h)
+                logits, _ = self._compute_logits(tgt_seq[:-1], h)
                 logits_full = self._prepend_2zeros(logits)
-                tgt_seq_label = torch.zeros_like(tgt_seq)
-                tgt_seq_label[:-1] = tgt_seq[1:]
                 return self.loss_func(
                     logits_full.view(-1, logits_full.size(-1)),
-                    tgt_seq_label.flatten()
+                    tgt_seq[1:].flatten()
                 )
             else:
                 predictions = []
