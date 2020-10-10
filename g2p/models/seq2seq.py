@@ -11,18 +11,29 @@ class Seq2Seq(nn.Module):
             self.rnn = getattr(nn, rnn_type)(embed_size, hidden_size,
                                              bidirectional=bidirectional)
             self.num_directions = 2 if bidirectional else 1
+
             if bidirectional:
-                self.enc2dec = nn.Linear(2 * hidden_size, hidden_size)
+                class RearrangeHidden(nn.Module):
+                    def __init__(self):
+                        super().__init__()
+
+                    def forward(self, h):
+                        h_ = h.view(-1, 2, *h.size()[1:]).transpose(1, 2)
+                        return h_.reshape(*h_.size()[:2], -1)
+
+                self.enc2dec = nn.Sequential(
+                    RearrangeHidden(),
+                    nn.Linear(2 * hidden_size, hidden_size)
+                )
+            else:
+                self.enc2dec = nn.Identity()
 
         def forward(self, src_seq):
             x0 = self.embedding(src_seq)
             h0 = torch.zeros(self.num_directions, x0.size(1), self.hidden_size,
                              device=src_seq.device)
             _, h = self.rnn(x0, h0)
-            if self.num_directions == 2:
-                h_ = h.view(-1, 2, *h.size()[1:]).transpose(1, 2)
-                h = self.enc2dec(h_.reshape(*h_.size()[:2], -1))
-            return h
+            return self.enc2dec(h)
 
     class Decoder(nn.Module):
         def __init__(self, rnn_type, embed_size, hidden_size, tgt_size):
