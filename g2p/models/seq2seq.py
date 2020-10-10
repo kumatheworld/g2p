@@ -13,18 +13,14 @@ class Seq2Seq(nn.Module):
             self.num_directions = 2 if bidirectional else 1
 
             if bidirectional:
-                class RearrangeHidden(nn.Module):
+                class Merge2Directions(nn.Module):
                     def __init__(self):
                         super().__init__()
 
                     def forward(self, h):
-                        h_ = h.view(-1, 2, *h.size()[1:]).transpose(1, 2)
-                        return h_.reshape(*h_.size()[:2], -1)
+                        return torch.stack((h[:1], h[1:])).mean(0)
 
-                self.enc2dec = nn.Sequential(
-                    RearrangeHidden(),
-                    nn.Linear(2 * hidden_size, hidden_size)
-                )
+                self.enc2dec = Merge2Directions()
             else:
                 self.enc2dec = nn.Identity()
 
