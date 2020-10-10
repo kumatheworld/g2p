@@ -20,16 +20,12 @@ class Seq2Seq(nn.Module):
             return h
 
     class Decoder(nn.Module):
-        def __init__(self, rnn_type, bidirectional,
-                     embed_size, hidden_size, tgt_size):
+        def __init__(self, rnn_type, embed_size, hidden_size, tgt_size):
             super().__init__()
             self.tgt_size = tgt_size
             self.embedding = nn.Embedding(tgt_size, embed_size, padding_idx=0)
-            self.rnn = getattr(nn, rnn_type)(embed_size, hidden_size,
-                                             bidirectional=bidirectional)
-            self.num_directions = 2 if bidirectional else 1
-            self.unembedding = nn.Linear(self.num_directions * hidden_size,
-                                         tgt_size - 2)
+            self.rnn = getattr(nn, rnn_type)(embed_size, hidden_size)
+            self.unembedding = nn.Linear(hidden_size, tgt_size - 2)
             self.loss_func = nn.CrossEntropyLoss(ignore_index=0)
             self.softmax = nn.Softmax(dim=-1)
 
@@ -72,8 +68,8 @@ class Seq2Seq(nn.Module):
         super().__init__()
         self.encoder = self.Encoder(rnn_type, bidirectional,
                                     src_size, enc_embed_size, hidden_size)
-        self.decoder = self.Decoder(rnn_type, bidirectional,
-                                    dec_embed_size, hidden_size, tgt_size)
+        self.decoder = self.Decoder(rnn_type, dec_embed_size, hidden_size,
+                                    tgt_size)
 
     def forward(self, src_seq, tgt_seq=None, search_algo=None):
         h = self.encoder(src_seq)
