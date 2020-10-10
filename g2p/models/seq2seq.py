@@ -12,6 +12,16 @@ class Seq2Seq(nn.Module):
                                              bidirectional=bidirectional)
             self.num_directions = 2 if bidirectional else 1
 
+        def forward(self, src_seq):
+            x0 = self.embedding(src_seq)
+            h0 = torch.zeros(self.num_directions, x0.size(1), self.hidden_size,
+                             device=src_seq.device)
+            _, h = self.rnn(x0, h0)
+            return h
+
+    class Enc2Dec(nn.Module):
+        def __init__(self, bidirectional):
+            super().__init__()
             if bidirectional:
                 class Merge2Directions(nn.Module):
                     def __init__(self):
@@ -24,13 +34,8 @@ class Seq2Seq(nn.Module):
             else:
                 self.enc2dec = nn.Identity()
 
-        def forward(self, src_seq):
-            x0 = self.embedding(src_seq)
-            h0 = torch.zeros(self.num_directions, x0.size(1), self.hidden_size,
-                             device=src_seq.device)
-            _, h = self.rnn(x0, h0)
-            return self.enc2dec(h)
-
+        def forward(self, hidden):
+            return self.enc2dec(hidden)
 
     class Decoder(nn.Module):
         def __init__(self, rnn_type, embed_size, hidden_size, tgt_size):
@@ -82,9 +87,10 @@ class Seq2Seq(nn.Module):
         super().__init__()
         self.encoder = self.Encoder(rnn_type, bidirectional,
                                     src_size, enc_embed_size, hidden_size)
+        self.enc2dec = self.Enc2Dec(bidirectional)
         self.decoder = self.Decoder(rnn_type, dec_embed_size, hidden_size,
                                     tgt_size)
 
     def forward(self, src_seq, tgt_seq=None, search_algo=None):
-        h = self.encoder(src_seq)
-        return self.decoder(h, tgt_seq, search_algo)
+        return self.decoder(self.enc2dec(self.encoder(src_seq)),
+                            tgt_seq, search_algo)
