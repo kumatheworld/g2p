@@ -35,6 +35,7 @@ class Seq2Seq(nn.Module):
             _, h = self.rnn(x0, h0)
             return self.enc2dec(h)
 
+
     class Decoder(nn.Module):
         def __init__(self, rnn_type, embed_size, hidden_size, tgt_size):
             super().__init__()
@@ -78,6 +79,7 @@ class Seq2Seq(nn.Module):
                     self.hidden = h[:, i:i+1]
                     predictions.append(search_algo(self._rec_prob_gen))
                 return predictions
+
 
     def __init__(self, rnn_type, bidirectional, src_size, enc_embed_size,
                  hidden_size, dec_embed_size, tgt_size):
