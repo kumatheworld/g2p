@@ -3,24 +3,24 @@ import torch.nn as nn
 
 class Seq2Seq(nn.Module):
     class Encoder(nn.Module):
-        def __init__(self, rnn_type, bidirectional,
-                     src_size, embed_size, hidden_size):
+        def __init__(self, rnn_type, src_size, embed_size,
+                     hidden_size, num_layers, bidirectional):
             super().__init__()
             self.hidden_size = hidden_size
             self.embedding = nn.Embedding(src_size, embed_size, padding_idx=0)
             self.rnn = getattr(nn, rnn_type)(embed_size, hidden_size,
+                                             num_layers=num_layers,
                                              bidirectional=bidirectional)
-            self.num_directions = 2 if bidirectional else 1
 
         def forward(self, src_seq):
             x0 = self.embedding(src_seq)
-            h0 = torch.zeros(self.num_directions, x0.size(1), self.hidden_size,
+            h0 = torch.zeros(-1, x0.size(1), self.hidden_size,
                              device=src_seq.device)
             _, h = self.rnn(x0, h0)
             return h
 
     class Enc2Dec(nn.Module):
-        def __init__(self, bidirectional):
+        def __init__(self, num_layers, bidirectional):
             super().__init__()
             if bidirectional:
                 class Add2Directions(nn.Module):
@@ -28,7 +28,7 @@ class Seq2Seq(nn.Module):
                         super().__init__()
 
                     def forward(self, h):
-                        return h[:1] + h[1:]
+                        return h[:num_layers] + h[num_layers:]
 
                 self.enc2dec = Add2Directions()
             else:
@@ -38,11 +38,13 @@ class Seq2Seq(nn.Module):
             return self.enc2dec(hidden)
 
     class Decoder(nn.Module):
-        def __init__(self, rnn_type, embed_size, hidden_size, tgt_size):
+        def __init__(self, rnn_type, embed_size, hidden_size,
+                     tgt_size, num_layers):
             super().__init__()
             self.tgt_size = tgt_size
             self.embedding = nn.Embedding(tgt_size, embed_size, padding_idx=0)
-            self.rnn = getattr(nn, rnn_type)(embed_size, hidden_size)
+            self.rnn = getattr(nn, rnn_type)(embed_size, hidden_size,
+                                             num_layers=num_layers)
             self.unembedding = nn.Linear(hidden_size, tgt_size - 2)
             self.loss_func = nn.CrossEntropyLoss(ignore_index=0)
             self.softmax = nn.Softmax(dim=-1)
@@ -82,14 +84,14 @@ class Seq2Seq(nn.Module):
                 return predictions
 
 
-    def __init__(self, rnn_type, bidirectional, src_size, enc_embed_size,
-                 hidden_size, dec_embed_size, tgt_size):
+    def __init__(self, rnn_type, src_size, enc_embed_size, hidden_size,
+                 dec_embed_size, tgt_size, num_layers, bidirectional):
         super().__init__()
-        self.encoder = self.Encoder(rnn_type, bidirectional,
-                                    src_size, enc_embed_size, hidden_size)
-        self.enc2dec = self.Enc2Dec(bidirectional)
+        self.encoder = self.Encoder(rnn_type, src_size, enc_embed_size,
+                                    hidden_size, num_layers, bidirectional)
+        self.enc2dec = self.Enc2Dec(num_layers, bidirectional)
         self.decoder = self.Decoder(rnn_type, dec_embed_size, hidden_size,
-                                    tgt_size)
+                                    tgt_size, num_layers)
 
     def forward(self, src_seq, tgt_seq=None, search_algo=None):
         return self.decoder(self.enc2dec(self.encoder(src_seq)),

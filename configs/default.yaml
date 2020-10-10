@@ -4,10 +4,11 @@ MODEL:
   NAME: Seq2Seq
   KWARGS:
     rnn_type: RNN
-    bidirectional: False
     enc_embed_size: 256
     hidden_size: 256
     dec_embed_size: 256
+    num_layers: 1
+    bidirectional: False
 CKPT_PATH: "g2p/checkpoints/model.pth"
 
 ## TRAIN ##
