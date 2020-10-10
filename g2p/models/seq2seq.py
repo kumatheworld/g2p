@@ -23,14 +23,14 @@ class Seq2Seq(nn.Module):
         def __init__(self, bidirectional):
             super().__init__()
             if bidirectional:
-                class Merge2Directions(nn.Module):
+                class Add2Directions(nn.Module):
                     def __init__(self):
                         super().__init__()
 
                     def forward(self, h):
-                        return torch.stack((h[:1], h[1:])).mean(0)
+                        return h[:1] + h[1:]
 
-                self.enc2dec = Merge2Directions()
+                self.enc2dec = Add2Directions()
             else:
                 self.enc2dec = nn.Identity()
 
