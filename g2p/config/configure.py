@@ -41,8 +41,8 @@ class Config:
 
         _attributify(self, cfg)
 
-        if (seed := cfg['SEED']) is not None:
-            _fix_seed(seed)
+        if cfg['SEED'] is not None:
+            _fix_seed(cfg['SEED'])
 
         use_cuda = torch.cuda.is_available() and cfg['USE_CUDA']
         device = torch.device('cuda' if use_cuda else 'cpu')
