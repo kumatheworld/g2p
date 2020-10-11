@@ -37,6 +37,7 @@ class Config:
         with open(config_path) as f:
             self.yaml_str = f.read()
         cfg = yaml.safe_load(self.yaml_str)
+        self.dictionary = cfg
 
         _attributify(self, cfg)
 
