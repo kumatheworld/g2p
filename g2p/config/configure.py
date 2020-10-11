@@ -49,12 +49,11 @@ class Config:
         self.USE_CUDA = use_cuda
         self.DEVICE = device
 
-        model_kwargs = {
-            'src_size': len(DoubleBets.alphabet),
+        model = getattr(models, cfg['MODEL']['NAME'])(
+            src_size=len(DoubleBets.alphabet),
+            tgt_size=len(DoubleBets.arpabet),
              **cfg['MODEL']['KWARGS'],
-            'tgt_size': len(DoubleBets.arpabet),
-        }
-        model = getattr(models, cfg['MODEL']['NAME'])(**model_kwargs)
+        )
         model.to(device)
         self.MODEL = model
 
