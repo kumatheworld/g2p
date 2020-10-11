@@ -20,8 +20,8 @@ def _fix_seed(seed):
     torch.backends.cudnn.benchmark = False
     torch.backends.cudnn.deterministic = True
 
-def _attributify(obj, d):
-    for k, v in d.items():
+def _attributify(obj, dikt):
+    for k, v in dikt.items():
         if isinstance(v, dict):
             setattr(obj, k, SimpleNamespace())
             _attributify(getattr(obj, k), v)
