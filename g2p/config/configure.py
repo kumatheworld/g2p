@@ -69,5 +69,5 @@ class Config:
             ckpt = torch.load(self.CKPT_PATH, map_location=device)
             model.load_state_dict(ckpt['model'])
 
-    def get_markdown_string(self):
-        return f'<pre>{self.str}</pre>'
+    def __str__(self):
+        return f'<pre>{self.yaml_str}</pre>'
