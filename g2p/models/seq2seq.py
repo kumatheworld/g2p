@@ -11,10 +11,11 @@ class Seq2Seq(nn.Module):
             self.rnn = getattr(nn, rnn_type)(embed_size, hidden_size,
                                              num_layers=num_layers,
                                              bidirectional=bidirectional)
+            self.hidden_size0 = num_layers * 2 if bidirectional else num_layers
 
         def forward(self, src_seq):
             x0 = self.embedding(src_seq)
-            h0 = torch.zeros(-1, x0.size(1), self.hidden_size,
+            h0 = torch.zeros(self.hidden_size0, x0.size(1), self.hidden_size,
                              device=src_seq.device)
             _, h = self.rnn(x0, h0)
             return h
