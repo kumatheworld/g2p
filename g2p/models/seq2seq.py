@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+from torch.nn.utils.rnn import pad_packed_sequence, pack_padded_sequence
 
 class Seq2Seq(nn.Module):
     class Encoder(nn.Module):
@@ -13,10 +14,14 @@ class Seq2Seq(nn.Module):
                                              bidirectional=bidirectional)
             self.hidden_size0 = num_layers * 2 if bidirectional else num_layers
 
-        def forward(self, src_seq):
-            x0 = self.embedding(src_seq)
-            h0 = torch.zeros(self.hidden_size0, x0.size(1), self.hidden_size,
-                             device=src_seq.device)
+        def forward(self, src_seq_and_len):
+            src_seq, src_len = src_seq_and_len
+            embedded = self.embedding(src_seq)
+            x0 = pack_padded_sequence(embedded, src_len, enforce_sorted=False)
+            h0 = torch.zeros(
+                self.hidden_size0, embedded.size(1), self.hidden_size,
+                device=src_seq.device
+            )
             _, h = self.rnn(x0, h0)
             return h
 
@@ -50,10 +55,12 @@ class Seq2Seq(nn.Module):
             self.loss_func = nn.CrossEntropyLoss(ignore_index=0)
             self.softmax = nn.Softmax(dim=-1)
 
-        def _compute_logits(self, seq_in, h0):
-            x0 = self.embedding(seq_in)
+        def _compute_logits(self, seq, length, h0):
+            embedded = self.embedding(seq)
+            x0 = pack_padded_sequence(embedded, length, enforce_sorted=False)
             x, h = self.rnn(x0, h0)
-            logits = self.unembedding(x)
+            padded, _ = pad_packed_sequence(x)
+            logits = self.unembedding(padded)
             return logits, h
 
         @staticmethod
@@ -63,15 +70,17 @@ class Seq2Seq(nn.Module):
             return torch.cat((zeros, out), dim=-1)
 
         def _rec_prob_gen(self, idx):
-            seq_in = torch.tensor([[idx]], dtype=torch.long,
-                                  device=self.hidden.device)
-            logits, self.hidden = self._compute_logits(seq_in, self.hidden)
+            seq = torch.tensor([[idx]], dtype=torch.long,
+                               device=self.hidden.device)
+            length = torch.ones(1, dtype=torch.long, device=self.hidden.device)
+            logits, self.hidden = self._compute_logits(seq, length, self.hidden)
             probabilities = self.softmax(logits)
             return self._prepend_2zeros(probabilities).squeeze(0)
 
-        def forward(self, h, tgt_seq, search_algo):
+        def forward(self, h, tgt_seq_and_len, search_algo):
             if self.training:
-                logits, _ = self._compute_logits(tgt_seq[:-1], h)
+                tgt_seq, tgt_len = tgt_seq_and_len
+                logits, _ = self._compute_logits(tgt_seq[:-1], tgt_len, h)
                 logits_full = self._prepend_2zeros(logits)
                 return self.loss_func(
                     logits_full.view(-1, logits_full.size(-1)),
@@ -94,6 +103,6 @@ class Seq2Seq(nn.Module):
         self.decoder = self.Decoder(rnn_type, dec_embed_size, hidden_size,
                                     tgt_size, num_layers)
 
-    def forward(self, src_seq, tgt_seq=None, search_algo=None):
-        return self.decoder(self.enc2dec(self.encoder(src_seq)),
-                            tgt_seq, search_algo)
+    def forward(self, data, label=None, search_algo=None):
+        return self.decoder(self.enc2dec(self.encoder(data)),
+                            label, search_algo)
