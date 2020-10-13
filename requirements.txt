@@ -9,7 +9,7 @@ google-auth-oauthlib==0.4.1
 grpcio==1.32.0
 idna==2.10
 joblib==0.17.0
-Markdown==3.3
+Markdown==3.3.1
 numpy==1.19.2
 oauthlib==3.1.0
 protobuf==3.13.0
