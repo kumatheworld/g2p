@@ -1,8 +1,7 @@
 import numpy as np
 
 def levenshtein_distance(a, b, divide_by_len_b=True):
-    table_width = len(b) + 1
-    table_prev = np.arange(table_width)
+    table_prev = np.arange(len(b) + 1)
     table_curr = np.empty_like(table_prev)
     for i, x in enumerate(a):
         table_curr[0] = i
