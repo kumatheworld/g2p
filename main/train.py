@@ -7,6 +7,7 @@ from torch.utils.tensorboard import SummaryWriter
 from g2p.config import Config
 from g2p.data import a2a_dataset, get_loader
 from g2p.evaluation import levenshtein_distance, mean_score
+from tools.nop import Nop
 from tools.log import get_simple_logger
 
 def train(cfg):
@@ -27,7 +28,8 @@ def train(cfg):
 
     optimizer = cfg.OPTIMIZER
     logger = get_simple_logger()
-    writer = SummaryWriter(comment=f'-{cfg.name}')
+    writer = Nop() if cfg.SANITY_CHECK.EN else \
+             SummaryWriter(comment=f'-{cfg.name}')
     writer.add_text('config', str(cfg))
 
     n_iter = 1
