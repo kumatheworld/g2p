@@ -69,7 +69,7 @@ def train(cfg):
 
         # validate
         val_loss = 0
-        val_dist = 0
+        val_dist = float('inf')
         if cfg.VALIDATE:
             with torch.no_grad():
                 for data, label in val_loader:
