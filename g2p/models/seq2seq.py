@@ -5,12 +5,13 @@ from torch.nn.utils.rnn import pad_packed_sequence, pack_padded_sequence
 class Seq2Seq(nn.Module):
     class Encoder(nn.Module):
         def __init__(self, rnn_type, src_size, embed_size,
-                     hidden_size, num_layers, bidirectional):
+                     hidden_size, num_layers, dropout, bidirectional):
             super().__init__()
             self.hidden_size = hidden_size
             self.embedding = nn.Embedding(src_size, embed_size, padding_idx=0)
             self.rnn = getattr(nn, rnn_type)(embed_size, hidden_size,
                                              num_layers=num_layers,
+                                             dropout=dropout,
                                              bidirectional=bidirectional)
             self.hidden_size0 = num_layers * 2 if bidirectional else num_layers
 
@@ -45,11 +46,12 @@ class Seq2Seq(nn.Module):
 
     class Decoder(nn.Module):
         def __init__(self, rnn_type, embed_size, hidden_size,
-                     tgt_size, num_layers):
+                     tgt_size, num_layers, dropout):
             super().__init__()
             self.tgt_size = tgt_size
             self.embedding = nn.Embedding(tgt_size, embed_size, padding_idx=0)
             self.rnn = getattr(nn, rnn_type)(embed_size, hidden_size,
+                                             dropout=dropout,
                                              num_layers=num_layers)
             self.unembedding = nn.Linear(hidden_size, tgt_size - 2)
             self.loss_func = nn.CrossEntropyLoss(ignore_index=0)
@@ -95,13 +97,14 @@ class Seq2Seq(nn.Module):
 
 
     def __init__(self, rnn_type, src_size, enc_embed_size, hidden_size,
-                 dec_embed_size, tgt_size, num_layers, bidirectional):
+                 dec_embed_size, tgt_size, num_layers, dropout, bidirectional):
         super().__init__()
         self.encoder = self.Encoder(rnn_type, src_size, enc_embed_size,
-                                    hidden_size, num_layers, bidirectional)
+                                    hidden_size, num_layers, dropout,
+                                    bidirectional)
         self.enc2dec = self.Enc2Dec(num_layers, bidirectional)
         self.decoder = self.Decoder(rnn_type, dec_embed_size, hidden_size,
-                                    tgt_size, num_layers)
+                                    tgt_size, num_layers, dropout)
 
     def forward(self, data, label=None, search_algo=None):
         return self.decoder(self.enc2dec(self.encoder(data)),

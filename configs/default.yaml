@@ -8,6 +8,7 @@ MODEL:
     hidden_size: 256
     dec_embed_size: 256
     num_layers: 1
+    dropout: 0
     bidirectional: False
 CKPT_PATH: "g2p/checkpoints/model.pth"
 
