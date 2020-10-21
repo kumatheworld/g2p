@@ -33,7 +33,7 @@ def train(cfg):
     writer.add_text('config', str(cfg))
 
     n_iter = 1
-    best_dist = 0
+    best_dist = float('inf')
     for epoch in range(1, cfg.EPOCHS + 1):
         # train
         train_loss = 0
@@ -69,7 +69,7 @@ def train(cfg):
 
         # validate
         val_loss = 0
-        val_dist = float('inf')
+        val_dist = 0
         if cfg.VALIDATE:
             with torch.no_grad():
                 for data, label in val_loader:
