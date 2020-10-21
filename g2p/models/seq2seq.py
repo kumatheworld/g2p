@@ -19,11 +19,7 @@ class Seq2Seq(nn.Module):
             src_seq, src_len = src_seq_and_len
             embedded = self.embedding(src_seq)
             x0 = pack_padded_sequence(embedded, src_len, enforce_sorted=False)
-            h0 = torch.zeros(
-                self.hidden_size0, embedded.size(1), self.hidden_size,
-                device=src_seq.device
-            )
-            _, h = self.rnn(x0, h0)
+            _, h = self.rnn(x0)
             return h
 
     class Enc2Dec(nn.Module):
