@@ -1,14 +1,17 @@
-def greedy_search(limit, st_dix=1, ed_idx=2):
-    def greedy_search_(f, idx=st_dix, count=0, history=None):
-        if history is None:
-            history = []
-        if count >= limit:
-            return history
-        likelihoods = f(idx)
-        idx = likelihoods.argmax().item()
-        if idx == ed_idx:
-            return history
-        history.append(idx)
-        return greedy_search_(f, idx, count + 1, history)
+class GreedySearch():
+    def __init__(self, limit, st_idx=1, ed_idx=2):
+        self.limit = limit
+        self.st_idx = st_idx
+        self.ed_idx = ed_idx
 
-    return greedy_search_
+    def __call__(self, f, state_init):
+        idx = self.st_idx
+        state = state_init
+        history = []
+        for i in range(self.limit):
+            prob, state = f(idx, state)
+            idx = prob.argmax().item()
+            if idx == self.ed_idx:
+                break
+            history.append(idx)
+        return history

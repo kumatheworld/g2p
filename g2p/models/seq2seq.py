@@ -67,13 +67,12 @@ class Seq2Seq(nn.Module):
                                 dtype=out.dtype, device=out.device)
             return torch.cat((zeros, out), dim=-1)
 
-        def _rec_prob_gen(self, idx):
-            seq = torch.tensor([[idx]], dtype=torch.long,
-                               device=self.hidden.device)
-            length = torch.ones(1, dtype=torch.long, device=self.hidden.device)
-            logits, self.hidden = self._compute_logits(seq, length, self.hidden)
-            probabilities = self.softmax(logits)
-            return self._prepend_2zeros(probabilities).squeeze(0)
+        def _rec_prob_gen(self, idx, hidden):
+            seq = torch.tensor([[idx]], dtype=torch.long, device=hidden.device)
+            length = torch.ones(1, dtype=torch.long, device=hidden.device)
+            logits, hidden_new = self._compute_logits(seq, length, hidden)
+            prob = self.softmax(logits)
+            return self._prepend_2zeros(prob).squeeze(0), hidden_new
 
         def forward(self, h, tgt_seq_and_len, search_algo):
             if self.training:
@@ -85,11 +84,10 @@ class Seq2Seq(nn.Module):
                     tgt_seq[1:].flatten()
                 )
             else:
-                predictions = []
-                for i in range(h.size(1)):
-                    self.hidden = h[:, i:i+1]
-                    predictions.append(search_algo(self._rec_prob_gen))
-                return predictions
+                return [
+                    search_algo(self._rec_prob_gen, h[:, i:i+1])
+                    for i in range(h.size(1))
+                ]
 
 
     def __init__(self, rnn_type, src_size, enc_embed_size, hidden_size,

@@ -30,6 +30,6 @@ LR: 0.01
 
 ## TEST ##
 SEARCH:
-  ALGO: greedy_search
+  ALGO: GreedySearch
   KWARGS:
-    limit: 30
+    limit: 20
