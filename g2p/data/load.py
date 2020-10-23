@@ -10,5 +10,6 @@ def _pad_data_and_label(batch):
 def get_loader(dataset, batch_size, use_cuda):
     kwargs = {'dataset': dataset, 'batch_size': batch_size,
               'collate_fn': _pad_data_and_label}
-    kwargs.update({'num_workers': 1, 'pin_memory': True} if use_cuda else {})
+    if use_cuda:
+        kwargs.update({'num_workers': 1, 'pin_memory': True})
     return DataLoader(**kwargs)
