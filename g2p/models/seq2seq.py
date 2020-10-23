@@ -77,7 +77,7 @@ class Seq2Seq(nn.Module):
         def forward(self, h, tgt_seq_and_len, search_algo):
             if self.training:
                 tgt_seq, tgt_len = tgt_seq_and_len
-                logits, _ = self._compute_logits(tgt_seq[:-1], tgt_len, h)
+                logits, _ = self._compute_logits(tgt_seq[:-1], tgt_len - 1, h)
                 logits_full = self._prepend_2zeros(logits)
                 return self.loss_func(
                     logits_full.view(-1, logits_full.size(-1)),
