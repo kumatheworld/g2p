@@ -63,7 +63,12 @@ class Config:
 
         if train:
             self.OPTIMIZER = getattr(optim, cfg['OPTIMIZER'])(
-                model.parameters(), lr=cfg['LR']
+                model.parameters(), lr=cfg['LR']['LR']
+            )
+            self.LR.SCHEDULER = \
+            getattr(optim.lr_scheduler, cfg['LR']['SCHEDULER'])(
+                self.OPTIMIZER,
+                **cfg['LR']['KWARGS']
             )
         else:
             ckpt = torch.load(self.CKPT_PATH, map_location=device)

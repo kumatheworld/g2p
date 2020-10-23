@@ -26,7 +26,11 @@ SANITY_CHECK:
 BATCH_SIZE: 128
 EPOCHS: 100
 OPTIMIZER: Adam
-LR: 0.01
+LR:
+  LR: 0.001
+  SCHEDULER: ExponentialLR
+  KWARGS:
+    gamma: 0.5
 
 ## TEST ##
 SEARCH:

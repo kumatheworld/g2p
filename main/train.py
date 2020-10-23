@@ -27,6 +27,7 @@ def train(cfg):
         val_loader = None
 
     optimizer = cfg.OPTIMIZER
+    lr_scheduler = cfg.LR.SCHEDULER
     logger = get_simple_logger()
     writer = Nop() if cfg.SANITY_CHECK.EN else \
              SummaryWriter(comment=f'-{cfg.name}')
@@ -94,6 +95,8 @@ def train(cfg):
                             {'train': train_dist, 'val': val_dist}, epoch)
 
             logger.debug(f'  Val:{epoch:8d}  {val_loss:.4f}  {val_dist:.4f}')
+
+        lr_scheduler.step()
 
         # save model
         if best_dist >= val_dist and not cfg.SANITY_CHECK.EN:
