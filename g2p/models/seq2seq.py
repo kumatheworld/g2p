@@ -72,7 +72,7 @@ class Seq2Seq(nn.Module):
             length = torch.ones(1, dtype=torch.long, device=hidden.device)
             logits, hidden_new = self._compute_logits(seq, length, hidden)
             prob = self.softmax(logits)
-            return self._prepend_2zeros(prob).squeeze(0), hidden_new
+            return self._prepend_2zeros(prob).squeeze(), hidden_new
 
         def forward(self, h, tgt_seq_and_len, search_algo):
             if self.training:
