@@ -8,7 +8,7 @@ class GreedySearch():
         idx = self.st_idx
         state = state_init
         history = []
-        for i in range(self.limit):
+        for _ in range(self.limit):
             prob, state = f(idx, state)
             idx = prob.argmax().item()
             if idx == self.ed_idx:
