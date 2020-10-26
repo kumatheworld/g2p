@@ -3,7 +3,7 @@ from heapq import nlargest
 
 Track = namedtuple('Track', 'len idx state prob_sum hist')
 
-class GreedySearch():
+class GreedySearch:
     def __init__(self, limit, st_idx=1, ed_idx=2):
         self.limit = limit
         self.st_idx = st_idx
@@ -21,7 +21,7 @@ class GreedySearch():
             history.append(idx)
         return history
 
-class BeamSearchLike():
+class BeamSearchLike:
     def __init__(self, beam_size, limit, st_idx=1, ed_idx=2):
         self.beam_size = beam_size
         self.limit = limit
