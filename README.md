@@ -9,3 +9,6 @@ This repository will let you train and test neural networks for pronunciation pr
 ## Train
 * ```python train.py```.
 * Watch training progress by ```tensorboard --logdir runs```.
+
+## Test
+* ```python test.py```.
