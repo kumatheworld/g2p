@@ -4,6 +4,7 @@ This repository will let you train and test neural networks for pronunciation pr
 ## Setup
 * Python version: 3.8.6.
 * ```pip install -r requirements.txt```.
+* ```export PYTHONPATH=/path/to/g2p:$PYTHONPATH```.
 
 ## Train
 * ```python train.py```.
