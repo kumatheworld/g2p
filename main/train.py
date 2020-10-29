@@ -20,10 +20,10 @@ def train(cfg):
 
     if cfg.VALIDATE:
         train_ds, test_ds = train_test_split(dataset, random_state=cfg.SEED)
-        train_loader = get_loader(train_ds, cfg.BATCH_SIZE, cfg.USE_CUDA)
-        val_loader = get_loader(test_ds, cfg.BATCH_SIZE, cfg.USE_CUDA)
+        train_loader = get_loader(train_ds, cfg.BATCH_SIZE, device)
+        val_loader = get_loader(test_ds, cfg.BATCH_SIZE, device)
     else:
-        train_loader = get_loader(dataset, cfg.BATCH_SIZE, cfg.USE_CUDA)
+        train_loader = get_loader(dataset, cfg.BATCH_SIZE, device)
         val_loader = None
 
     optimizer = cfg.OPTIMIZER
@@ -40,9 +40,6 @@ def train(cfg):
         train_loss = 0
         train_dist = 0
         for data, label in train_loader:
-            data = (data[0].to(device), data[1].to(device))
-            label = (label[0].to(device), label[1].to(device))
-
             model.train()
             loss = model(data, label)
             loss.backward()
@@ -74,9 +71,6 @@ def train(cfg):
         if cfg.VALIDATE:
             with torch.no_grad():
                 for data, label in val_loader:
-                    data = (data[0].to(device), data[1].to(device))
-                    label = (label[0].to(device), label[1].to(device))
-
                     model.train()
                     loss = model(data, label)
                     val_loss += loss
