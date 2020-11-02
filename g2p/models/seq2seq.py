@@ -8,9 +8,9 @@ class Seq2Seq(Base):
         def __init__(self, rnn_type, embedding, hidden_size,
                      num_layers, dropout, bidirectional):
             super().__init__()
-            _, embed_size = embedding.weight.size()
+            _, embed_dim = embedding.weight.size()
             self.embedding = embedding
-            self.rnn = getattr(nn, rnn_type)(embed_size, hidden_size,
+            self.rnn = getattr(nn, rnn_type)(embed_dim, hidden_size,
                                              num_layers=num_layers,
                                              dropout=dropout,
                                              bidirectional=bidirectional)
@@ -44,9 +44,9 @@ class Seq2Seq(Base):
         def __init__(self, rnn_type, embedding, hidden_size,
                      num_layers, dropout):
             super().__init__()
-            tgt_size, embed_size = embedding.weight.size()
-            self.embedding = nn.Embedding(tgt_size, embed_size, padding_idx=0)
-            self.rnn = getattr(nn, rnn_type)(embed_size, hidden_size,
+            tgt_size, embed_dim = embedding.weight.size()
+            self.embedding = nn.Embedding(tgt_size, embed_dim, padding_idx=0)
+            self.rnn = getattr(nn, rnn_type)(embed_dim, hidden_size,
                                              dropout=dropout,
                                              num_layers=num_layers)
             self.unembedding = nn.Linear(hidden_size, tgt_size - 2)
@@ -90,9 +90,9 @@ class Seq2Seq(Base):
                 ]
 
 
-    def __init__(self, rnn_type, src_size, enc_embed_size, hidden_size,
-                 dec_embed_size, tgt_size, num_layers, dropout, bidirectional):
-        super().__init__(src_size, enc_embed_size, tgt_size, dec_embed_size)
+    def __init__(self, rnn_type, src_size, enc_embed_dim, hidden_size,
+                 dec_embed_dim, tgt_size, num_layers, dropout, bidirectional):
+        super().__init__(src_size, enc_embed_dim, tgt_size, dec_embed_dim)
         self.encoder = self.Encoder(rnn_type, self.enc_emb, hidden_size,
                                     num_layers, dropout, bidirectional)
         self.enc2dec = self.Enc2Dec(num_layers, bidirectional)
