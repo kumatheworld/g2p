@@ -7,13 +7,11 @@ class Seq2Seq(nn.Module):
         def __init__(self, rnn_type, src_size, embed_size,
                      hidden_size, num_layers, dropout, bidirectional):
             super().__init__()
-            self.hidden_size = hidden_size
             self.embedding = nn.Embedding(src_size, embed_size, padding_idx=0)
             self.rnn = getattr(nn, rnn_type)(embed_size, hidden_size,
                                              num_layers=num_layers,
                                              dropout=dropout,
                                              bidirectional=bidirectional)
-            self.hidden_size0 = num_layers * 2 if bidirectional else num_layers
 
         def forward(self, src_seq_and_len):
             src_seq, src_len = src_seq_and_len
