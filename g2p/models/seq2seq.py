@@ -42,7 +42,6 @@ class Seq2Seq(nn.Module):
         def __init__(self, rnn_type, embed_size, hidden_size,
                      tgt_size, num_layers, dropout):
             super().__init__()
-            self.tgt_size = tgt_size
             self.embedding = nn.Embedding(tgt_size, embed_size, padding_idx=0)
             self.rnn = getattr(nn, rnn_type)(embed_size, hidden_size,
                                              dropout=dropout,
