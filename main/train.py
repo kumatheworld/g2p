@@ -5,7 +5,7 @@ import torch
 from torch.utils.tensorboard import SummaryWriter
 
 from g2p.config import Config
-from g2p.data import a2a_dataset, get_loader
+from g2p.data import a2a_dataset, get_loader, DoubleBets
 from g2p.evaluation import levenshtein_distance, mean_score
 from tools.nop import Nop
 from tools.log import get_simple_logger
@@ -102,6 +102,12 @@ def train(cfg):
             }
             torch.save(checkpoint, cfg.CKPT_PATH)
 
+    # visualize embeddings
+    writer.add_embedding(model.enc_emb.weight,
+                         DoubleBets.alphabet.i2t, tag='Alphabet')
+    writer.add_embedding(model.dec_emb.weight,
+                         DoubleBets.arpabet.special_tokens + \
+                         list(DoubleBets.arpabet2ipa.values()), tag='IPA')
     writer.close()
 
 if __name__ == '__main__':
