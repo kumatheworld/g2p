@@ -4,9 +4,9 @@ MODEL:
   NAME: Seq2Seq
   KWARGS:
     rnn_type: GRU
-    enc_embed_size: 64
+    enc_embed_dim: 64
     hidden_size: 256
-    dec_embed_size: 64
+    dec_embed_dim: 64
     num_layers: 2
     dropout: 0
     bidirectional: True
