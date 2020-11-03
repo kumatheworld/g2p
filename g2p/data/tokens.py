@@ -7,8 +7,8 @@ class DoubleBets:
     class SingleBet:
         def __init__(self, token_list):
             self.pad_idx, self.st_idx, self.ed_idx = range(3)
-            pad, st, ed = '=<>'
-            self.i2t = [pad, st, ed] + token_list
+            self.special_tokens = ['<pad>', '<st>', '<ed>']
+            self.i2t = self.special_tokens + token_list
             self.t2i = {t: i for i, t in enumerate(self.i2t)}
 
         def __len__(self):
