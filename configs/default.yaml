@@ -10,7 +10,7 @@ MODEL:
     num_layers: 2
     dropout: 0
     bidirectional: True
-CKPT_PATH: "g2p/checkpoints/model.pth"
+CKPT_PATH: "g2p/checkpoints/seq2seq.pth"
 
 ## TRAIN ##
 # random seed
