@@ -11,6 +11,7 @@ from tools.nop import Nop
 from tools.log import get_simple_logger
 
 if __name__ == '__main__':
+    logger = get_simple_logger()
     parser = argparse.ArgumentParser()
     parser.add_argument('--config', type=str, default='default',
                         help="YAML file name under configs/")
@@ -35,7 +36,6 @@ if __name__ == '__main__':
 
     optimizer = cfg.OPTIMIZER
     lr_scheduler = cfg.LR.SCHEDULER
-    logger = get_simple_logger()
     writer = Nop() if cfg.SANITY_CHECK.EN else \
              SummaryWriter(comment=f'-{cfg.name}')
     writer.add_text('config', str(cfg))
