@@ -10,7 +10,14 @@ from g2p.evaluation import levenshtein_distance, mean_score
 from tools.nop import Nop
 from tools.log import get_simple_logger
 
-def train(cfg):
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--config', type=str, default='default',
+                        help="YAML file name under configs/")
+    args = parser.parse_args()
+
+    cfg = Config(args.config, train=True)
+
     device = cfg.DEVICE
     model = cfg.MODEL
 
@@ -109,12 +116,3 @@ def train(cfg):
                          DoubleBets.arpabet.special_tokens + \
                          list(DoubleBets.arpabet2ipa.values()), tag='IPA')
     writer.close()
-
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--config', type=str, default='default',
-                        help="YAML file name under configs/")
-    args = parser.parse_args()
-
-    cfg = Config(args.config, train=True)
-    train(cfg)
