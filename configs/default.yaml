@@ -18,6 +18,8 @@ SEED: 0
 
 # dataset
 VALIDATE: True
+
+# sanity check with small data
 SANITY_CHECK:
   EN: False
   NUM_DATA: 6400
