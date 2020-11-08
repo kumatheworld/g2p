@@ -48,10 +48,10 @@ if __name__ == '__main__':
         train_dist = 0
         for data, label in train_loader:
             model.train()
+            optimizer.zero_grad()
             loss = model(data, label)
             loss.backward()
             optimizer.step()
-            optimizer.zero_grad()
 
             loss_item = loss.item()
             writer.add_scalar('loss/train', loss_item, n_iter)
