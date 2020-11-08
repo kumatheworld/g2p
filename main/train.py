@@ -97,8 +97,6 @@ if __name__ == '__main__':
 
             logger.debug(f'  Val:{epoch:8d}  {val_loss:.4f}  {val_dist:.4f}')
 
-        lr_scheduler.step()
-
         # visualize embeddings
         writer.add_embedding(model.enc_emb.weight, DoubleBets.alphabet.i2t,
                              global_step=epoch, tag='Alphabet')
@@ -116,5 +114,7 @@ if __name__ == '__main__':
                 'model': model.state_dict(),
             }
             torch.save(checkpoint, cfg.CKPT_PATH)
+
+        lr_scheduler.step()
 
     writer.close()
