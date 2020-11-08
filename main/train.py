@@ -121,5 +121,6 @@ if __name__ == '__main__':
             torch.save(checkpoint, cfg.CKPT_PATH)
 
         lr_scheduler.step()
+        logger.info('')
 
     writer.close()
