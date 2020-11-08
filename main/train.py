@@ -99,6 +99,14 @@ if __name__ == '__main__':
 
         lr_scheduler.step()
 
+        # visualize embeddings
+        writer.add_embedding(model.enc_emb.weight, DoubleBets.alphabet.i2t,
+                             global_step=epoch, tag='Alphabet')
+        writer.add_embedding(model.dec_emb.weight,
+                             DoubleBets.arpabet.special_tokens + \
+                             list(DoubleBets.arpabet2ipa.values()),
+                             global_step=epoch, tag='IPA')
+
         # save model
         if best_dist >= val_dist and not cfg.SANITY_CHECK.EN:
             best_dist = val_dist
@@ -109,10 +117,4 @@ if __name__ == '__main__':
             }
             torch.save(checkpoint, cfg.CKPT_PATH)
 
-    # visualize embeddings
-    writer.add_embedding(model.enc_emb.weight,
-                         DoubleBets.alphabet.i2t, tag='Alphabet')
-    writer.add_embedding(model.dec_emb.weight,
-                         DoubleBets.arpabet.special_tokens + \
-                         list(DoubleBets.arpabet2ipa.values()), tag='IPA')
     writer.close()
