@@ -17,6 +17,7 @@ if __name__ == '__main__':
                         help="YAML file name under configs/")
     args = parser.parse_args()
 
+    logger.info('Loading config...')
     cfg = Config(args.config, train=True)
 
     device = cfg.DEVICE
