@@ -23,6 +23,7 @@ if __name__ == '__main__':
     device = cfg.DEVICE
     model = cfg.MODEL
 
+    logger.info('Loading data...')
     dataset = a2a_dataset
     if cfg.SANITY_CHECK.EN:
         dataset = random.sample(dataset, cfg.SANITY_CHECK.NUM_DATA)
