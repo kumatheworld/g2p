@@ -42,6 +42,7 @@ if __name__ == '__main__':
              SummaryWriter(comment=f'-{cfg.name}')
     writer.add_text('config', str(cfg))
 
+    logger.info('Start training!')
     n_iter = 1
     best_dist = float('inf')
     for epoch in range(1, cfg.EPOCHS + 1):
