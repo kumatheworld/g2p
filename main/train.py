@@ -124,3 +124,4 @@ if __name__ == '__main__':
         logger.info('')
 
     writer.close()
+    logger.info('Training done!')
