@@ -46,7 +46,9 @@ if __name__ == '__main__':
     n_iter = 1
     best_dist = float('inf')
     for epoch in range(1, cfg.EPOCHS + 1):
-        # train
+        logger.info(f'Epoch {epoch}\n'
+                     '   Iter     Loss     Dist   \n'
+                     '----------------------------')
         train_loss = 0
         train_dist = 0
         for data, label in train_loader:
@@ -68,12 +70,16 @@ if __name__ == '__main__':
             writer.add_scalar('dist/train', dist, n_iter)
             train_dist += dist
 
-            logger.debug(f'Train:{n_iter:8d}  {loss_item:.4f}  {dist:.4f}')
-
+            logger.info(f'{n_iter:8d}   {loss_item:.4f}   {dist:.4f}')
             n_iter += 1
 
         train_loss /= len(train_loader)
         train_dist /= len(train_loader)
+
+        logger.info( '----------------------------\n'
+                    f'Epoch {epoch} Summary\n'
+                     '            Loss     Dist   \n'
+                    f'   Train   {train_loss:.4f}   {train_dist:.4f}')
 
         # validate
         val_loss = 0
@@ -98,7 +104,7 @@ if __name__ == '__main__':
             writer.add_scalars('dist/train & val',
                             {'train': train_dist, 'val': val_dist}, epoch)
 
-            logger.debug(f'  Val:{epoch:8d}  {val_loss:.4f}  {val_dist:.4f}')
+            logger.info(f'     Val   {val_loss:.4f}   {val_dist:.4f}')
 
         # visualize embeddings
         writer.add_embedding(model.enc_emb.weight, DoubleBets.alphabet.i2t,
