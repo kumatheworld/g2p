@@ -65,8 +65,7 @@ if __name__ == '__main__':
             model.eval()
             with torch.no_grad():
                 pred = model(data, search_algo=cfg.SEARCH)
-                label_seq = label[0]
-                dist = mean_score(levenshtein_distance, pred, label_seq)
+                dist = mean_score(levenshtein_distance, pred, label.seq)
             writer.add_scalar('dist/train', dist, n_iter)
             train_dist += dist
 
@@ -93,8 +92,7 @@ if __name__ == '__main__':
 
                     model.eval()
                     pred = model(data, search_algo=cfg.SEARCH)
-                    label_seq = label[0]
-                    dist = mean_score(levenshtein_distance, pred, label_seq)
+                    dist = mean_score(levenshtein_distance, pred, label.seq)
                     val_dist += dist
 
             val_loss /= len(val_loader)

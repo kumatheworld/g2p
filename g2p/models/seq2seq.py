@@ -15,10 +15,9 @@ class Seq2Seq(Base):
                                              dropout=dropout,
                                              bidirectional=bidirectional)
 
-        def forward(self, src_seq_and_len):
-            src_seq, src_len = src_seq_and_len
-            embedded = self.embedding(src_seq)
-            x0 = pack_padded_sequence(embedded, src_len, enforce_sorted=False)
+        def forward(self, data):
+            embedded = self.embedding(data.seq)
+            x0 = pack_padded_sequence(embedded, data.len, enforce_sorted=False)
             _, h = self.rnn(x0)
             return h
 
@@ -74,14 +73,14 @@ class Seq2Seq(Base):
             prob = self.softmax(logits)
             return self._prepend_2zeros(prob).squeeze(), hidden_new
 
-        def forward(self, h, tgt_seq_and_len, search_algo):
+        def forward(self, h, label, search_algo):
             if self.training:
-                tgt_seq, tgt_len = tgt_seq_and_len
-                logits, _ = self._compute_logits(tgt_seq[:-1], tgt_len - 1, h)
+                logits, _ = self._compute_logits(label.seq[:-1],
+                                                 label.len - 1, h)
                 logits_full = self._prepend_2zeros(logits)
                 return self.loss_func(
                     logits_full.view(-1, logits_full.size(-1)),
-                    tgt_seq[1:].flatten()
+                    label.seq[1:].flatten()
                 )
             else:
                 return [
