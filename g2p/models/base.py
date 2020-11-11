@@ -14,6 +14,7 @@ class Base(nn.Module):
 
     @staticmethod
     def _prepend_2zeros(out):
-        zeros = torch.zeros(*out.size()[:-1], 2,
-                            dtype=out.dtype, device=out.device)
-        return torch.cat((zeros, out), dim=-1)
+        out_new = torch.zeros(*out.size()[:-1], 2 + out.size()[-1],
+                              dtype=out.dtype, device=out.device)
+        out_new[..., 2:] = out
+        return out_new
