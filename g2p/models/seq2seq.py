@@ -7,20 +7,16 @@ class Seq2Seq(Base):
     def __init__(self, rnn_type, src_size, enc_embed_dim, hidden_size,
                  dec_embed_dim, tgt_size, num_layers, dropout, bidirectional):
         super().__init__(src_size, enc_embed_dim, tgt_size, dec_embed_dim)
-        # common
-        self.num_layers = num_layers
+
+        RNN = getattr(nn, rnn_type)
 
         # encoder
-        self.bidirectional = bidirectional
-        self.enc_rnn = getattr(nn, rnn_type)(enc_embed_dim, hidden_size,
-                                             num_layers=num_layers,
-                                             dropout=dropout,
-                                             bidirectional=bidirectional)
+        self.enc_rnn = RNN(enc_embed_dim, hidden_size, num_layers=num_layers,
+                           dropout=dropout, bidirectional=bidirectional)
 
         # decoder
-        self.dec_rnn = getattr(nn, rnn_type)(dec_embed_dim, hidden_size,
-                                             dropout=dropout,
-                                             num_layers=num_layers)
+        self.dec_rnn = RNN(dec_embed_dim, hidden_size, num_layers=num_layers,
+                           dropout=dropout)
         self.dec_unembed = nn.Linear(hidden_size, tgt_size - 2)
         self.loss_func = nn.CrossEntropyLoss(ignore_index=0)
         self.softmax = nn.Softmax(dim=-1)
