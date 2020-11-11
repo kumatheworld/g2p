@@ -31,12 +31,6 @@ class Seq2Seq(Base):
         logits = self.dec_unembed(padded)
         return logits, h
 
-    @staticmethod
-    def _prepend_2zeros(out):
-        zeros = torch.zeros(*out.size()[:-1], 2,
-                            dtype=out.dtype, device=out.device)
-        return torch.cat((zeros, out), dim=-1)
-
     def _rec_prob_gen(self, idx, h):
         seq = torch.tensor([[idx]], dtype=torch.long, device=h.device)
         length = torch.ones(1, dtype=torch.long, device=h.device)

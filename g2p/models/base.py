@@ -1,3 +1,4 @@
+import torch
 import torch.nn as nn
 
 class Base(nn.Module):
@@ -11,3 +12,8 @@ class Base(nn.Module):
         self.loss_func = nn.CrossEntropyLoss(ignore_index=0)
         self.softmax = nn.Softmax(dim=-1)
 
+    @staticmethod
+    def _prepend_2zeros(out):
+        zeros = torch.zeros(*out.size()[:-1], 2,
+                            dtype=out.dtype, device=out.device)
+        return torch.cat((zeros, out), dim=-1)
