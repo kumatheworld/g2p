@@ -6,7 +6,8 @@ from g2p.models.base import Base
 class Seq2Seq(Base):
     def __init__(self, rnn_type, src_size, enc_embed_dim, hidden_size,
                  dec_embed_dim, tgt_size, num_layers, dropout, bidirectional):
-        super().__init__(src_size, enc_embed_dim, tgt_size, dec_embed_dim)
+        super().__init__(src_size, enc_embed_dim, hidden_size,
+                         tgt_size, dec_embed_dim)
 
         RNN = getattr(nn, rnn_type)
 
@@ -21,9 +22,6 @@ class Seq2Seq(Base):
         # decoder
         self.dec_rnn = RNN(dec_embed_dim, hidden_size, num_layers=num_layers,
                            dropout=dropout)
-        self.dec_unembed = nn.Linear(hidden_size, tgt_size - 2)
-        self.loss_func = nn.CrossEntropyLoss(ignore_index=0)
-        self.softmax = nn.Softmax(dim=-1)
 
     def _compute_logits(self, seq, length, h0):
         embedded = self.dec_emb(seq)
