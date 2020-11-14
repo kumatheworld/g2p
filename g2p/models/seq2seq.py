@@ -11,15 +11,12 @@ class Seq2Seq(Base):
 
         RNN = getattr(nn, rnn_type)
 
-        # encoder
         self.enc_rnn = RNN(enc_embed_dim, hidden_size, num_layers=num_layers,
                            dropout=dropout, bidirectional=bidirectional)
 
-        # enc2dec
         self.enc2dec = (lambda h: h[:self.num_layers] + h[self.num_layers:]) \
                        if bidirectional else nn.Identity()
 
-        # decoder
         self.dec_rnn = RNN(dec_embed_dim, hidden_size, num_layers=num_layers,
                            dropout=dropout)
 
