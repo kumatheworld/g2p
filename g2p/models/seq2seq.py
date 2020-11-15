@@ -4,8 +4,8 @@ from torch.nn.utils.rnn import pad_packed_sequence, pack_padded_sequence
 from g2p.models.base import Base
 
 class Seq2Seq(Base):
-    def __init__(self, rnn_type, src_size, enc_embed_dim, hidden_size,
-                 dec_embed_dim, tgt_size, num_layers, dropout, bidirectional):
+    def __init__(self, src_size, tgt_size, rnn_type, enc_embed_dim, hidden_size,
+                 dec_embed_dim, num_layers, dropout, bidirectional):
         super().__init__(src_size, enc_embed_dim, hidden_size,
                          tgt_size, dec_embed_dim)
 
