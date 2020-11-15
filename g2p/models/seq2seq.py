@@ -14,7 +14,7 @@ class Seq2Seq(Base):
         self.enc_rnn = RNN(enc_embed_dim, hidden_size, num_layers=num_layers,
                            dropout=dropout, bidirectional=bidirectional)
 
-        self.enc2dec = (lambda h: h[:self.num_layers] + h[self.num_layers:]) \
+        self.enc2dec = (lambda h: h[:num_layers] + h[num_layers:]) \
                        if bidirectional else nn.Identity()
 
         self.dec_rnn = RNN(dec_embed_dim, hidden_size, num_layers=num_layers,
