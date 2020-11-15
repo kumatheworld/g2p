@@ -54,6 +54,6 @@ class Seq2Seq(Base):
             )
         else:
             return [
-                search_algo(self._rec_prob_gen, h[:, i:i+1])
+                search_algo(self._rec_prob_gen, h[:, [i]])
                 for i in range(h.size(1))
             ]
