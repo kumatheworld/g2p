@@ -30,7 +30,7 @@ class Seq2Seq(Base):
 
     def _rec_prob_gen(self, idx, h):
         seq = torch.tensor([[idx]], dtype=torch.long, device=h.device)
-        length = torch.ones(1, dtype=torch.long, device=h.device)
+        length = torch.ones(1, dtype=torch.long)
         logits, h_next = self._compute_logits(seq, length, h)
         prob = self.softmax(logits)
         return self._prepend_2zeros(prob).squeeze(), h_next
