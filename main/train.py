@@ -112,8 +112,8 @@ if __name__ == '__main__':
                              list(DoubleBets.arpabet2ipa.values()),
                              global_step=epoch, tag='IPA')
 
-        # save model
-        if best_dist >= val_dist and not cfg.SANITY_CHECK.EN:
+        # save checkpoint
+        if best_dist >= val_dist and not cfg.SANITY_CHECK:
             logger.info('Best accuracy achieved!\n'
                         'Saving model...')
             best_dist = val_dist
