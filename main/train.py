@@ -25,8 +25,8 @@ if __name__ == '__main__':
 
     logger.info('Loading data...')
     dataset = a2a_dataset
-    if cfg.SANITY_CHECK.EN:
-        dataset = random.sample(dataset, cfg.SANITY_CHECK.NUM_DATA)
+    if cfg.NUM_DATA >= 0:
+        dataset = random.sample(dataset, cfg.NUM_DATA)
 
     if cfg.VALIDATE:
         train_ds, test_ds = train_test_split(dataset, random_state=cfg.SEED)
@@ -38,7 +38,7 @@ if __name__ == '__main__':
 
     optimizer = cfg.OPTIMIZER
     lr_scheduler = cfg.LR.SCHEDULER
-    writer = Nop() if cfg.SANITY_CHECK.EN else \
+    writer = Nop() if cfg.SANITY_CHECK else \
              SummaryWriter(comment=f'-{cfg.name}')
     writer.add_text('config', str(cfg))
 
