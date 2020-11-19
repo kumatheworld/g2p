@@ -15,10 +15,10 @@ CKPT_PATH: "g2p/checkpoints/seq2seq.pth"
 
 ## TRAIN ##
 # turn off tensorboard and don't save checkpoints
-SANITY_CHECK: True
+SANITY_CHECK: False
 
 # dataset
-NUM_DATA: 64
+NUM_DATA: -1
 VALIDATE: True
 
 # optimization
