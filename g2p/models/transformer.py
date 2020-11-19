@@ -30,11 +30,15 @@ class Transformer(Base):
 
         encoder_layer = nn.TransformerEncoderLayer(d_model, nhead,
                                                    dim_feedforward, dropout)
-        self.enc_trf = nn.TransformerEncoder(encoder_layer, num_layers)
+        encoder_norm = nn.LayerNorm(d_model)
+        self.enc_trf = nn.TransformerEncoder(encoder_layer, num_layers,
+                                             encoder_norm)
 
+        decoder_norm = nn.LayerNorm(d_model)
         decoder_layer = nn.TransformerDecoderLayer(d_model, nhead,
                                                    dim_feedforward, dropout)
-        self.dec_trf = nn.TransformerDecoder(decoder_layer, num_layers)
+        self.dec_trf = nn.TransformerDecoder(decoder_layer, num_layers,
+                                             decoder_norm)
 
     def _compute_logits(self, seq):
         embedded = self.dec_emb(seq)
