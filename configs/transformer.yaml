@@ -1,0 +1,37 @@
+## COMMON ##
+SEED: 0
+USE_CUDA: True
+MODEL:
+  NAME: Transformer
+  KWARGS:
+    d_model: 256
+    nhead: 2
+    dim_feedforward: 256
+    dropout: 0.1
+    num_layers: 2
+CKPT_PATH: "g2p/checkpoints/transformer.pth"
+
+## TRAIN ##
+# turn off tensorboard and don't save checkpoints
+SANITY_CHECK: False
+
+## dataset
+# use all data if NUM_DATA < 0
+NUM_DATA: -1
+VALIDATE: True
+
+## optimization
+BATCH_SIZE: 64
+EPOCHS: 50
+OPTIMIZER: Adam
+LR:
+  LR: 0.001
+  SCHEDULER: ExponentialLR
+  KWARGS:
+    gamma: 1
+
+## TEST ##
+SEARCH:
+  ALGO: GreedySearch
+  KWARGS:
+    limit: 20
