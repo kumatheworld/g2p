@@ -2,13 +2,14 @@ import argparse
 import torch
 
 from g2p.config import Config
-from g2p.data import DoubleBets
+from g2p.data import Data, DoubleBets
 
 def predict(device, model, search_algo, word):
     input_seq = DoubleBets.alphabet.tseq2iseq(word).unsqueeze(1).to(device)
     input_len = torch.LongTensor([input_seq.size(0)])
     with torch.no_grad():
-        output_seq = model((input_seq, input_len), search_algo=search_algo)[0]
+        data = Data(input_seq, input_len)
+        output_seq = model(data, search_algo=search_algo)[0]
         output_arpaseq = DoubleBets.arpabet.iseq2tseq(output_seq)
         return DoubleBets.arpabetSeq2ipaString(output_arpaseq)
 
