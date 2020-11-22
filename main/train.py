@@ -3,6 +3,7 @@ import random
 from sklearn.model_selection import train_test_split
 import torch
 from torch.utils.tensorboard import SummaryWriter
+from tqdm import tqdm
 
 from g2p.config import Config
 from g2p.data import a2a_dataset, get_loader, DoubleBets
@@ -46,46 +47,41 @@ if __name__ == '__main__':
     n_iter = 1
     best_dist = float('inf')
     for epoch in range(1, cfg.EPOCHS + 1):
-        logger.info(f'Epoch {epoch}\n'
-                     '   Iter     Loss     Dist   \n'
-                     '----------------------------')
+        logger.info(f'Epoch {epoch} / {cfg.EPOCHS}')
         train_loss = 0
         train_dist = 0
-        for data, label in train_loader:
-            model.train()
-            optimizer.zero_grad()
-            loss = model(data, label)
-            loss.backward()
-            optimizer.step()
+        with tqdm(train_loader, desc='[Train]') as pbar:
+            for data, label in pbar:
+                model.train()
+                optimizer.zero_grad()
+                loss = model(data, label)
+                loss.backward()
+                optimizer.step()
 
-            loss_item = loss.item()
-            writer.add_scalar('loss/train', loss_item, n_iter)
-            train_loss += loss_item
+                loss_item = loss.item()
+                writer.add_scalar('loss/train', loss_item, n_iter)
+                train_loss += loss_item
 
-            model.eval()
-            with torch.no_grad():
-                pred = model(data, search_algo=cfg.SEARCH)
-                dist = mean_score(levenshtein_distance, pred, label.seq)
-            writer.add_scalar('dist/train', dist, n_iter)
-            train_dist += dist
+                model.eval()
+                with torch.no_grad():
+                    pred = model(data, search_algo=cfg.SEARCH)
+                    dist = mean_score(levenshtein_distance, pred, label.seq)
+                writer.add_scalar('dist/train', dist, n_iter)
+                train_dist += dist
 
-            logger.info(f'{n_iter:8d}   {loss_item:.4f}   {dist:.4f}')
-            n_iter += 1
+                pbar.set_postfix({'loss': loss_item, 'dist': dist})
+                n_iter += 1
 
         train_loss /= len(train_loader)
         train_dist /= len(train_loader)
-
-        logger.info( '----------------------------\n'
-                    f'Epoch {epoch} Summary\n'
-                     '            Loss     Dist   \n'
-                    f'   Train   {train_loss:.4f}   {train_dist:.4f}')
 
         # validate
         val_loss = 0
         val_dist = 0
         if cfg.VALIDATE:
-            with torch.no_grad():
-                for data, label in val_loader:
+            with torch.no_grad(), \
+                 tqdm(val_loader, desc='  [Val]') as pbar:
+                for data, label in pbar:
                     model.train()
                     loss_item = model(data, label).item()
                     val_loss += loss_item
@@ -95,6 +91,8 @@ if __name__ == '__main__':
                     dist = mean_score(levenshtein_distance, pred, label.seq)
                     val_dist += dist
 
+                    pbar.set_postfix({'loss': loss_item, 'dist': dist})
+
             val_loss /= len(val_loader)
             val_dist /= len(val_loader)
             writer.add_scalars('loss/train & val',
@@ -102,7 +100,12 @@ if __name__ == '__main__':
             writer.add_scalars('dist/train & val',
                             {'train': train_dist, 'val': val_dist}, epoch)
 
-            logger.info(f'     Val   {val_loss:.4f}   {val_dist:.4f}')
+
+        logger.info(f'Summary:\n'
+                     '         Loss     Dist   \n'
+                    f' Train  {train_loss:.4f}   {train_dist:.4f}')
+        if cfg.VALIDATE:
+            logger.info(f'   Val  {val_loss:.4f}   {val_dist:.4f}')
 
         # visualize embeddings
         writer.add_embedding(model.enc_emb.weight, DoubleBets.alphabet.i2t,
