@@ -87,8 +87,8 @@ if __name__ == '__main__':
             with torch.no_grad():
                 for data, label in val_loader:
                     model.train()
-                    loss = model(data, label)
-                    val_loss += loss
+                    loss_item = model(data, label).item()
+                    val_loss += loss_item
 
                     model.eval()
                     pred = model(data, search_algo=cfg.SEARCH)
