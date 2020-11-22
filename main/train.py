@@ -114,8 +114,9 @@ if __name__ == '__main__':
 
         # save checkpoint
         if best_dist >= val_dist and not cfg.SANITY_CHECK:
-            logger.info('Best accuracy achieved!\n'
-                        'Saving model...')
+            if cfg.VALIDATE:
+                logger.info('Best accuracy achieved!')
+            logger.info('Saving model...')
             best_dist = val_dist
             checkpoint = {
                 'config': cfg.dictionary,
