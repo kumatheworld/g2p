@@ -10,6 +10,10 @@ MODEL:
     dropout: 0.1
     num_layers: 2
 CKPT_PATH: "g2p/checkpoints/transformer.pth"
+SEARCH:
+  ALGO: GreedySearch
+  KWARGS:
+    limit: 20
 
 ## TRAIN ##
 # dataset
@@ -30,9 +34,3 @@ LR:
   SCHEDULER: ExponentialLR
   KWARGS:
     gamma: 1
-
-## TEST ##
-SEARCH:
-  ALGO: GreedySearch
-  KWARGS:
-    limit: 20
