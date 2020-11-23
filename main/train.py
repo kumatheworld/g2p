@@ -61,15 +61,19 @@ if __name__ == '__main__':
                 loss_item = loss.item()
                 writer.add_scalar('loss/train', loss_item, n_iter)
                 train_loss += loss_item
+                info = {'loss': loss_item}
 
-                model.eval()
-                with torch.no_grad():
-                    pred = model(data, search_algo=cfg.SEARCH)
-                    dist = mean_score(levenshtein_distance, pred, label.seq)
-                writer.add_scalar('dist/train', dist, n_iter)
-                train_dist += dist
+                if cfg.EVAL_TRAIN:
+                    model.eval()
+                    with torch.no_grad():
+                        pred = model(data, search_algo=cfg.SEARCH)
+                        dist = mean_score(levenshtein_distance,
+                                          pred, label.seq)
+                    writer.add_scalar('dist/train', dist, n_iter)
+                    train_dist += dist
+                    info['dist'] = dist
 
-                pbar.set_postfix({'loss': loss_item, 'dist': dist})
+                pbar.set_postfix(info)
                 n_iter += 1
 
         train_loss /= len(train_loader)
@@ -85,27 +89,36 @@ if __name__ == '__main__':
                     model.train()
                     loss_item = model(data, label).item()
                     val_loss += loss_item
+                    info = {'loss': loss_item}
 
-                    model.eval()
-                    pred = model(data, search_algo=cfg.SEARCH)
-                    dist = mean_score(levenshtein_distance, pred, label.seq)
-                    val_dist += dist
+                    if cfg.EVAL_VAL:
+                        model.eval()
+                        pred = model(data, search_algo=cfg.SEARCH)
+                        dist = mean_score(levenshtein_distance,
+                                          pred, label.seq)
+                        val_dist += dist
+                        info['dist'] = dist
 
-                    pbar.set_postfix({'loss': loss_item, 'dist': dist})
+                    pbar.set_postfix(info)
 
             val_loss /= len(val_loader)
             val_dist /= len(val_loader)
             writer.add_scalars('loss/train & val',
-                            {'train': train_loss, 'val': val_loss}, epoch)
-            writer.add_scalars('dist/train & val',
-                            {'train': train_dist, 'val': val_dist}, epoch)
+                               {'train': train_loss, 'val': val_loss}, epoch)
+            info = {}
+            if cfg.EVAL_TRAIN:
+                info['train'] = train_dist
+            if cfg.EVAL_VAL:
+                info['val'] = val_dist
+            writer.add_scalars('dist/train & val', info, epoch)
 
-
-        logger.info(f'Summary:\n'
-                     '         Loss     Dist   \n'
-                    f' Train  {train_loss:.4f}   {train_dist:.4f}')
+        logger.info('Summary:\n'
+                    '         Loss    Dist   \n'
+                    f' Train  {train_loss:.4f}  ' +
+                   (f'{train_dist:.4f}' if cfg.EVAL_TRAIN else "------"))
         if cfg.VALIDATE:
-            logger.info(f'   Val  {val_loss:.4f}   {val_dist:.4f}')
+            logger.info(f'   Val  {val_loss:.4f}  ' +
+                       (f'{val_dist:.4f}' if cfg.EVAL_VAL else "------"))
 
         # visualize embeddings
         writer.add_embedding(model.enc_emb.weight, DoubleBets.alphabet.i2t,

@@ -14,12 +14,14 @@ MODEL:
 CKPT_PATH: "g2p/checkpoints/seq2seq.pth"
 
 ## TRAIN ##
-# turn off tensorboard and don't save checkpoints
-SANITY_CHECK: False
-
 # dataset
 NUM_DATA: -1
 VALIDATE: True
+
+# training process management
+SANITY_CHECK: False
+EVAL_TRAIN: True
+EVAL_VAL: True
 
 # optimization
 BATCH_SIZE: 64

@@ -12,15 +12,16 @@ MODEL:
 CKPT_PATH: "g2p/checkpoints/transformer.pth"
 
 ## TRAIN ##
-# turn off tensorboard and don't save checkpoints
-SANITY_CHECK: False
-
-## dataset
-# use all data if NUM_DATA < 0
+# dataset
 NUM_DATA: -1
 VALIDATE: True
 
-## optimization
+# training process management
+SANITY_CHECK: False
+EVAL_TRAIN: False
+EVAL_VAL: True
+
+# optimization
 BATCH_SIZE: 64
 EPOCHS: 50
 OPTIMIZER: Adam
