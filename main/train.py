@@ -45,6 +45,7 @@ if __name__ == '__main__':
 
     logger.info('Start training!')
     n_iter = 1
+    best_loss = float('inf')
     best_dist = float('inf')
     for epoch in range(1, cfg.EPOCHS + 1):
         logger.info(f'Epoch {epoch} / {cfg.EPOCHS}')
@@ -129,11 +130,15 @@ if __name__ == '__main__':
                              global_step=epoch, tag='IPA')
 
         # save checkpoint
-        if best_dist >= val_dist and not cfg.SANITY_CHECK:
+        if (best_dist >= val_dist if cfg.EVAL_VAL else best_loss >= val_loss) \
+            and not cfg.SANITY_CHECK:
             if cfg.VALIDATE:
                 logger.info('Best accuracy achieved!')
             logger.info('Saving model...')
-            best_dist = val_dist
+            if cfg.EVAL_VAL:
+                best_dist = val_dist
+            else:
+                best_loss = val_loss
             checkpoint = {
                 'config': cfg.dictionary,
                 'epoch': epoch,
