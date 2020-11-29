@@ -32,7 +32,7 @@ if __name__ == '__main__':
     if cfg.VALIDATE:
         train_ds, test_ds = train_test_split(dataset, random_state=cfg.SEED)
         train_loader = get_loader(train_ds, cfg.BATCH_SIZE, device)
-        val_loader = get_loader(test_ds, cfg.BATCH_SIZE, device)
+        val_loader = get_loader(test_ds, cfg.BATCH_SIZE, device, shuffle=False)
     else:
         train_loader = get_loader(dataset, cfg.BATCH_SIZE, device)
         val_loader = None
