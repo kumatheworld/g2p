@@ -16,6 +16,6 @@ def _pad_data_and_label(device):
 
     return _pad_data_and_label_
 
-def get_loader(dataset, batch_size, device):
-    return DataLoader(dataset, batch_size, shuffle=True,
+def get_loader(dataset, batch_size, device, shuffle=True):
+    return DataLoader(dataset, batch_size, shuffle=shuffle,
                       collate_fn=_pad_data_and_label(device))
