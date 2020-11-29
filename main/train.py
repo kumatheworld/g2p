@@ -115,11 +115,11 @@ if __name__ == '__main__':
 
         logger.info('Summary:\n'
                     '         Loss    Dist   \n'
-                    f' Train  {train_loss:.4f}  ' +
-                   (f'{train_dist:.4f}' if cfg.EVAL_TRAIN else "------"))
+                   f' Train  {train_loss:.4f}  ' +
+                    (f'{train_dist:.4f}' if cfg.EVAL_TRAIN else "------"))
         if cfg.VALIDATE:
             logger.info(f'   Val  {val_loss:.4f}  ' +
-                       (f'{val_dist:.4f}' if cfg.EVAL_VAL else "------"))
+                        (f'{val_dist:.4f}' if cfg.EVAL_VAL else "------"))
 
         # visualize embeddings
         writer.add_embedding(model.enc_emb.weight, DoubleBets.alphabet.i2t,
