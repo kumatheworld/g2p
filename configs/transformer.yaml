@@ -31,6 +31,6 @@ EPOCHS: &epochs 20
 OPTIMIZER: Adam
 LR:
   LR: 0.001
-  SCHEDULER: ExponentialLR
+  SCHEDULER: CosineAnnealingLR
   KWARGS:
-    gamma: 1
+    T_max: *epochs
