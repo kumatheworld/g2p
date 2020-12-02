@@ -27,7 +27,7 @@ EVAL_VAL: False
 
 # optimization
 BATCH_SIZE: 64
-EPOCHS: 50
+EPOCHS: &epochs 20
 OPTIMIZER: Adam
 LR:
   LR: 0.001
