@@ -1,7 +1,7 @@
 # g2p
 This repository lets you train and test neural networks for pronunciation prediction of American English. Hopefully, you will know how people would sensibly pronounce brand new words.
 
-![IPA embedding](https://drive.google.com/uc?export=view&id=1zQ1clgjPFomzB8Jw9ovdEWWUYx1voIGq)
+![IPA embedding](https://drive.google.com/uc?export=view&id=1fdj14oyWNvKgfYTBQbaPDc-iBrrBpzon)
 
 ## Setup
 * Python ≥ 3.6.
