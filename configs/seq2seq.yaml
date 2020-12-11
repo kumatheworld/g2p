@@ -24,8 +24,8 @@ VALIDATE: True
 
 # training process management
 SANITY_CHECK: False
-EVAL_TRAIN: True
-EVAL_VAL: True
+EVAL_TRAIN: False
+EVAL_VAL: False
 
 # optimization
 BATCH_SIZE: 64
