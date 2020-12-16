@@ -10,11 +10,11 @@ This repository lets you train and test neural networks for pronunciation predic
 * Download .pth files from [here](https://drive.google.com/drive/folders/1fyj9mBHauAuXW33mcol3J2RORFEMdHzr?usp=sharing) and put them under ```g2p/checkpoints```.
 
 ## Test
-* ```python test.py```.
+* ```python main/test.py```.
 
 ## Train
-* ```python train.py```.
+* ```python main/train.py```.
 * Watch training progress by ```tensorboard --logdir runs```.
 
 ## Validate
-* ```python val.py```.
+* ```python main/val.py```.
