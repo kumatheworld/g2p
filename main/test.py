@@ -19,7 +19,7 @@ def test(cfg):
     print("Model ready, type whatever word you like!")
 
     while True:
-        word = input()
+        word = input('(@@)/ ')
         prediction = predict(cfg.DEVICE, model, cfg.SEARCH, word)
         print(prediction)
 
