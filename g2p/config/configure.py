@@ -11,7 +11,6 @@ from g2p import models
 from g2p.processing import search
 
 def _fix_seed(seed):
-    os.environ.PYTHONHASHSEED = str(seed)
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
