@@ -49,11 +49,11 @@ if __name__ == '__main__':
     best_dist = float('inf')
     for epoch in range(1, cfg.EPOCHS + 1):
         logger.info(f'Epoch {epoch} / {cfg.EPOCHS}')
+        model.train()
         train_loss = 0
         train_dist = 0
         with tqdm(train_loader, desc='[Train]') as pbar:
             for data, label in pbar:
-                model.train()
                 optimizer.zero_grad()
                 loss = model(data, label)
                 loss.backward()
@@ -73,6 +73,7 @@ if __name__ == '__main__':
                     writer.add_scalar('dist/train', dist, n_iter)
                     train_dist += dist
                     info['dist'] = dist
+                    model.train()
 
                 pbar.set_postfix(info)
                 n_iter += 1
@@ -81,19 +82,18 @@ if __name__ == '__main__':
         train_dist /= len(train_loader)
 
         # validate
+        model.eval()
         val_loss = 0
         val_dist = 0
         if cfg.VALIDATE:
             with torch.no_grad(), \
                  tqdm(val_loader, desc='  [Val]') as pbar:
                 for data, label in pbar:
-                    model.train()
                     loss_item = model(data, label).item()
                     val_loss += loss_item
                     info = {'loss': loss_item}
 
                     if cfg.EVAL_VAL:
-                        model.eval()
                         pred = model(data, search_algo=cfg.SEARCH)
                         dist = mean_score(levenshtein_distance,
                                           pred, label.seq)
