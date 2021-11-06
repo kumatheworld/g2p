@@ -1,7 +1,7 @@
 # g2p
 This repository lets you train and test neural networks for pronunciation prediction. Once you feed an English word, whether it be in your dictionary or not, you will get a sequence of IPA symbols that represents its pronunciation.
 
-![demo](https://drive.google.com/uc?export=view&id=1w7dpxUDPoaMHwoLueIeDD5CREtqV-vY_)![IPA embedding](https://drive.google.com/uc?export=view&id=1fdj14oyWNvKgfYTBQbaPDc-iBrrBpzon)
+![demo](https://drive.google.com/uc?export=view&id=1w7dpxUDPoaMHwoLueIeDD5CREtqV-vY_)![IPA embedding](https://drive.google.com/uc?export=view&id=1DQB4jgNnIwn4VXPhv0KPEN6CBmkiq3Wl)
 
 ## Setup
 * Python ≥ 3.6.
